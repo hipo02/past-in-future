@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startseite</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --nav-text: #2c3e50;
+            --button-bg: #3494E6;
+            --button-hover: #EC6EAD;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(52, 148, 230, 0.1);
+            --feature-card-bg: rgba(255, 255, 255, 0.9);
+            --feature-text: #2c3e50;
+            --chat-container-bg: rgba(255, 255, 255, 0.95);
+            --message-text: #2c3e50;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --text-color: #e2e8f0;
+            --nav-bg: rgba(15, 23, 42, 0.95);
+            --nav-text: #e2e8f0;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --card-border: rgba(236, 110, 173, 0.1);
+            --feature-card-bg: rgba(30, 41, 59, 0.9);
+            --feature-text: #e2e8f0;
+            --chat-container-bg: rgba(30, 41, 59, 0.95);
+            --message-text: #e2e8f0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(236, 110, 173, 0.1);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(52, 148, 230, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--nav-text);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--button-bg);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            transform: scaleX(1);
+        }
+
+        .theme-switch {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch button {
+            background: transparent;
+            border: 2px solid var(--nav-text);
+            color: var(--nav-text);
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .theme-switch button:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+
+        .theme-icon {
+            font-size: 20px;
+        }
+
+        [data-theme="dark"] .theme-icon-sun {
+            display: none;
+        }
+
+        [data-theme="light"] .theme-icon-moon {
+            display: none;
+        }
+
+        .hero {
+            height: 100vh;
+            background: linear-gradient(-45deg, #3494E6, #EC6EAD, #60a5fa, #7dd3fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0));
+            z-index: 1;
+        }
+
+        .chat-container {
+            max-width: 700px;
+            width: 90%;
+            position: relative;
+            z-index: 2;
+            background: var(--chat-container-bg);
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: float 6s ease-in-out infinite;
+            transform: translateY(-40px);
+            color: var(--message-text);
+        }
+
+        .chat-messages {
+            margin-bottom: 50px;
+            text-align: left;
+        }
+
+        .message {
+            padding: 15px 25px;
+            margin: 12px 0;
+            border-radius: 18px;
+            max-width: 85%;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s forwards;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .message.received {
+            background: linear-gradient(135deg, #3494E6, #EC6EAD);
+            color: white;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.sent {
+            background: linear-gradient(135deg, #3494E6, #EC6EAD);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-time {
+            font-size: 0.8em;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 16px 38px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            letter-spacing: 0.5px;
+            font-size: 1.05em;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--button-bg), var(--button-hover));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        .button:hover::before {
+            opacity: 1;
+        }
+
+        .button-primary {
+            background: linear-gradient(135deg, #3494E6, #EC6EAD);
+            color: white;
+            border: none;
+        }
+
+        .button-secondary {
+            background: rgba(52, 148, 230, 0.1);
+            color: #2c3e50;
+            border: 2px solid #3494E6;
+            backdrop-filter: blur(5px);
+        }
+
+        .button-secondary:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        [data-theme="dark"] .button-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        [data-theme="dark"] .button-secondary:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .features {
+            background: var(--bg-color);
+            padding: 30px 20px;
+            position: relative;
+            margin-top: -120px;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            background: linear-gradient(45deg, #3494E6, #EC6EAD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 0 auto;
+            max-width: 900px;
+            padding: 0 15px;
+        }
+
+        .feature-card {
+            background: var(--feature-card-bg);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--feature-text);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #3494E6, transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-icon {
+            font-size: 2.2em;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #3494E6, #EC6EAD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: all 0.4s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1.15em;
+            margin: 0 0 8px 0;
+            color: var(--feature-text);
+        }
+
+        .feature-card p {
+            color: var(--feature-text);
+            line-height: 1.4;
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                width: 85%;
+                padding: 25px;
+                margin-top: 20px;
+            }
+
+            .features {
+                margin-top: -80px;
+                padding: 25px 15px;
+            }
+
+            .feature-card {
+                height: auto;
+                padding: 20px 15px;
+            }
+        }
+
+        .chat-button {
+            background: linear-gradient(135deg, #3494E6, #EC6EAD);
+            color: white !important;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .chat-button:hover {
+            background: linear-gradient(135deg, #EC6EAD, #3494E6);
+            transform: translateY(-2px);
+        }
+
+        /* Verbesserte Animationen und Effekte */
+        @keyframes float {
+            0% { transform: translateY(-40px); }
+            50% { transform: translateY(-50px); }
+            100% { transform: translateY(-40px); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-links">
+            <a href="/">Startseite</a>
+            <a href="/login.html">Anmelden</a>
+            <a href="/signup.html">Registrieren</a>
+        </div>
+        <div class="theme-switch">
+            <button onclick="toggleTheme()" id="themeButton">
+                <span class="theme-icon theme-icon-sun">☀️</span>
+                <span class="theme-icon theme-icon-moon">🌙</span>
+                <span id="themeText">Dark Mode</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message received" style="animation-delay: 0.5s">
+                    <div>👋 Willkommen bei unserem Chat!</div>
+                    <div class="message-time">Gerade eben</div>
+                </div>
+                <div class="message received" style="animation-delay: 1.5s">
+                    <div>Hier können Sie sich mit anderen Benutzern unterhalten.</div>
+                    <div class="message-time">Gerade eben</div>
+                </div>
+                <div class="message received" style="animation-delay: 2.5s">
+                    <div>Erstellen Sie ein Konto oder melden Sie sich an, um loszulegen!</div>
+                    <div class="message-time">Gerade eben</div>
+                </div>
+            </div>
+            <div class="cta-buttons">
+                <a href="/login.html" class="button button-primary">Anmelden</a>
+                <a href="/signup.html" class="button button-secondary">Konto erstellen</a>
+            </div>
+        </div>
+    </div>
+
+    <section class="features">
+        <h2>Chat Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Echtzeit-Chat</h3>
+                <p>Sofortige Nachrichtenübermittlung für flüssige Kommunikation.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Gruppen-Chats</h3>
+                <p>Chatten Sie mit mehreren Personen gleichzeitig.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Sicher & Privat</h3>
+                <p>Ende-zu-Ende verschlüsselt für Ihre Privatsphäre.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Theme aus localStorage laden oder Standard (light) setzen
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeButton();
+
+        // Theme umschalten
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const newTheme = current === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton();
+        }
+
+        // Button-Text und Icon aktualisieren
+        function updateThemeButton() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const themeText = document.getElementById('themeText');
+            themeText.textContent = theme === 'light' ? 'Dark Mode' : 'Light Mode';
+        }
+
+        // Nachrichten-Animation
+        function addMessage(text, type = 'received') {
+            const messages = document.getElementById('chatMessages');
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            
+            const content = document.createElement('div');
+            content.textContent = text;
+            
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = 'Gerade eben';
+            
+            message.appendChild(content);
+            message.appendChild(time);
+            messages.appendChild(message);
+        }
+
+        // Periodisch neue Nachrichten hinzufügen
+        let messageIndex = 0;
+        const welcomeMessages = [
+            "Möchten Sie neue Leute kennenlernen?",
+            "Unsere Community freut sich auf Sie!",
+            "Sichere und schnelle Kommunikation."
+        ];
+
+        setInterval(() => {
+            if (messageIndex < welcomeMessages.length) {
+                addMessage(welcomeMessages[messageIndex]);
+                messageIndex++;
+            }
+        }, 4000);
+
+        // Überprüfe Login-Status für den Chat-Button
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch('/check-session');
+                const data = await response.json();
+                const chatButton = document.querySelector('.chat-button');
+                
+                chatButton.addEventListener('click', function(e) {
+                    if (!data.loggedIn) {
+                        e.preventDefault();
+                        window.location.href = '/login.html';
+                    }
+                });
+            } catch (error) {
+                console.error('Fehler beim Überprüfen des Login-Status:', error);
+            }
+        }
+
+        // Führe die Überprüfung aus, wenn die Seite geladen ist
+        document.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
+</body>
+</html> 

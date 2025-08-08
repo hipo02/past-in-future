@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bestätigungscode eingeben</title>
+    <style>
+
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #2c3e50;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --nav-text: #2c3e50;
+            --button-bg: #3494E6;
+            --button-hover: #EC6EAD;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(52, 148, 230, 0.1);
+            --primary-gradient: linear-gradient(135deg, #3494E6, #EC6EAD);
+            --hover-gradient: linear-gradient(135deg, #EC6EAD, #3494E6);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+        .container {
+            height: 100vh;
+            background: linear-gradient(-45deg, #3494E6, #EC6EAD, #60a5fa, #7dd3fc);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--card-border);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 30px;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Bestätigungscode eingeben</h2>
+        <form id="verifyForm">
+            <input type="text" id="verificationCode" placeholder="Bestätigungscode" required>
+            <button type="submit">Verifizieren</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById('verifyForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const code = document.getElementById('verificationCode').value;
+
+            fetch('/verify-db-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById('message').textContent = data.message;
+                } else {
+                    document.getElementById('message').textContent = 'Verifizierung erfolgreich';
+                    // Hier können Sie den Benutzer zu einer anderen Seite weiterleiten
+                    // window.location.href = '/home.html'; // Beispiel für eine Weiterleitung
+                }
+            })
+            .catch(error => {
+                console.error('Fehler bei der Verifizierung:', error);
+                document.getElementById('message').textContent = 'Fehler bei der Verifizierung';
+            });
+        });
+    </script>
+</body>
+</html>

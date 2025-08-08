@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einstellungen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #3494E6, #EC6EAD);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(236, 110, 173, 0.1);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(52, 148, 230, 0.1);
+        }
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar a {
+            display: inline-block;
+            background: var(--button-bg);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .navbar a:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+        }
+        .settings-container {
+            max-width: 800px;
+            margin: 120px auto;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .btn {
+            background-color: #3494E6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #EC6EAD;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        :root {
+            --button-bg: #3494E6;
+            --button-hover: #EC6EAD;
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --card-bg: white;
+        }
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --button-bg: #bb86fc;
+            --button-hover: #3700b3;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="profile.html">Profil</a></li>
+            <li><a href="contact.html">Kontakt</a></li>
+            <li><a href="index.html">Abmelden</a></li>
+        </ul>
+    </nav>
+
+    <div class="settings-container">
+        <h1>Einstellungen</h1>
+        <button class="btn" id="toggleDarkMode">Toggle Dark Mode</button>
+    </div>
+
+    <script>
+        // Funktion zum Umschalten des Dark Modes
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            // Dark Mode Einstellung im Local Storage speichern
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Dark Mode Einstellung beim Laden der Seite anwenden
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+            }
+
+            document.getElementById('toggleDarkMode').addEventListener('click', toggleDarkMode);
+        });
+    </script>
+</body>
+</html> 
